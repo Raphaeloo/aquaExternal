@@ -88,13 +88,16 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, bool healthBased, 
 					continue;
 				}
 				
+				if(ent.m_iHealth < 1) // check if entity is a player
+					continue;
+				
 				if (g_glow[i].m_bRenderWhenOccluded == 1)
 					continue;
 				
 				if(visCheck == 1)
 				{
 					// yes i know. it's a shit way to do a visibility check but we're external and i cant be arsed to do bsp parsing
-					csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + ent.m_bSpotted), &bSpotted, sizeof(bSpotted));
+					csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0xECD), &bSpotted, sizeof(bSpotted));
 					
 					if(bSpotted == 0)
 						continue;
@@ -113,7 +116,7 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, bool healthBased, 
 							unsigned int entityId = 0;
 							bool isImmune;
 							csgo->Read((void*) (localPlayer+0xBBB8), &inCrossID, sizeof(inCrossID));
-							csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + ent.m_bGunGameImmunity), &isImmune, sizeof(isImmune));
+							csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0x4158), &isImmune, sizeof(isImmune));
 							if(inCrossID > 0 && !isImmune) // no unnecessary reads
 							{
 								csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0x94), &entityId, sizeof(entityId));
@@ -128,10 +131,10 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, bool healthBased, 
 						
 						unsigned long clrRenderOrig;
 						unsigned long clrRender = 0xff000000; // 0xAARRGGBB
-						csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + ent.m_clrRender), &clrRenderOrig, sizeof(clrRenderOrig));
+						csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0xA8), &clrRenderOrig, sizeof(clrRenderOrig));
 						
 						if(clrRender != clrRenderOrig)
-							csgo->Write((void*) ((unsigned long) g_glow[i].m_pEntity + ent.m_clrRender), &clrRender, sizeof(clrRender));
+							csgo->Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xA8), &clrRender, sizeof(clrRender));
 						
 						//cout << "clrRenderOrig: " << clrRenderOrig << endl;
 						

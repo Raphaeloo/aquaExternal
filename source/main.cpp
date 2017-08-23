@@ -58,7 +58,9 @@ int main()
 	Display* display = XOpenDisplay(0);
 
 	try 
+	{
 		cfg.readFile("config.cfg");
+	}
 
 	catch (const FileIOException &fioex) 
 	{
@@ -212,10 +214,10 @@ int main()
 	csgo.MusicKitChangerEnabled = musicKitEnabled;
 
 	cout << endl;
-	cout << CYAN << "aquaExternal for CS:GO initialized." << endl;
-	cout << CYAN << " > maintained by hi im spacebar" << endl;
-	cout << CYAN << " > original authors: McSwaggens and s0beit" << endl;
-	cout << endl;
+	cout << CYAN << " aquaExternal for CS:GO initialized." << endl;
+	cout << "  > maintained by: hi im spacebar" << endl;
+	cout << "  > original authors: McSwaggens and s0beit" << endl;
+	cout << RESET << endl;
 
 	char keys[32];
 	char lastkeys[32];
@@ -268,7 +270,9 @@ int main()
 		}
 
 		try
+		{
 			cheat::GlowAndTrigger(colors, fullBloom, healthBased, rainbowOn, visCheck, &csgo, &client);
+		}
 
 		catch (int exception) 
 		{
@@ -278,7 +282,7 @@ int main()
 		
 		cheat::RCS(sensitivity, m_yaw, m_pitch, &csgo, &client);
 
-		//cheat::SpoofMusicKit(musicKitID, &csgo, &client); // Only works on local servers because I can't get LocalPlayerIndex without the engine pointer
+		cheat::SpoofMusicKit(musicKitID, &csgo, &client); // Only works on local servers because I can't get LocalPlayerIndex without the engine pointer
 		
 		cheat::FovChanger(iFov, &csgo, &client);
 		

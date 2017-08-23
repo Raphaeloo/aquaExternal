@@ -68,6 +68,23 @@ namespace cheat
 		{
 			return (long(&(this)->unk2) - long(this));
 		}
+		
+		/*void* m_pEntity;   				   //0x0000
+		float m_flGlowRed;					//0x0002
+		float m_flGlowGreen;				//0x0003
+		float m_flGlowBlue;              //0x0004
+		float m_flGlowAlpha;             //0x0010
+		uint8_t pad_0014[4];               //0x0014
+		float m_flSomeFloat;             //0x0018
+		uint8_t pad_001C[4];               //0x001C
+		float m_flAnotherFloat;          //0x0020
+		bool m_bRenderWhenOccluded : 8;     //0x0024
+		bool m_bRenderWhenUnoccluded : 8;   //0x0025
+		bool m_bFullBloomRender : 8;        //0x0026
+		uint8_t pad_0027[5];               //0x0027
+		int m_nGlowStyle;              //0x002C
+		int m_nSplitScreenSlot;        //0x0030
+		int m_nNextFreeSlot;           //0x0034*/
 
 		void* m_pEntity;
 		float m_flGlowRed;

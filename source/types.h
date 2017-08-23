@@ -35,64 +35,52 @@ struct QAngle
 
 struct Entity
 {
-	char __buf_0x00[0x40]; // 0x0
-	float m_flLastMadeNoiseTime; // 0x40
-	char __buf_0x44[0x4C]; // 0x44
-	int m_bIsAutoaimTarget; // 0x90
-	char __buf_0x94[0x14]; // 0x94
-	int m_clrRender; // 0xA8
-	int m_cellbits; // 0xAC
-	char __buf_0xB0[0x4]; // 0xB0
-	int m_cellX; // 0xB4
-	int m_cellY; // 0xB8
-	int m_cellZ; // 0xBC
-	char __buf_0xC0[0x64]; // 0xC0
-	int m_fEffects; // 0x124
-	int m_iTeamNum; // 0x128
+	char __buf_0x00[0xCC]; // 0x0
+	Vector m_vecAbsVelocity; // 0xCC
+	Vector m_vecAbsOrigin; // 0xD8
+	Vector m_vecOrigin; // 0xE4
+	Vector m_vecAngVelocity; // 0xF0
+	QAngle m_angAbsRotation; // 0xFC
+	QAngle m_angRotation; // 0x108
+	float m_flGravity; // 0x114
+	float m_flProxyRandomValue; // 0x118
+	int m_iEFlags; // 0x11C
+	unsigned char m_nWaterType; // 0x120
+	unsigned char m_bDormant; // 0x121
+	char __buf_0x122[0x2]; // 0x122
+	float m_fEffects; // 0x124
+	unsigned int m_iTeamNum; // 0x128
 	int m_iPendingTeamNum; // 0x12C
-	char __buf_0x130[0x30]; // 0x130
-	QAngle m_angRotation; // 0x160
-	Vector m_vecOrigin; // 0x16C
-	char __buf_0x178[0x4]; // 0x178
-	int moveparent; // 0x17C
-	unsigned long long m_hOwnerEntity; // 0x180
-	char m_iName[0x104]; // 0x188
+	char __buf_0x130[0x4]; // 0x130
+	int m_iHealth; // 0x134
+	int m_fFlags; // 0x138
+	Vector m_vecViewOffset; // 0x13C
+	Vector m_vecVelocity; // 0x148
+	Vector m_vecBaseVelocity; // 0x154
+	QAngle m_angNetworkAngles; // 0x160
+	Vector m_vecNetworkOrigin; // 0x16C
+	float m_flFriction; // 0x178
+	unsigned int m_hNetworkMoveParent; // 0x17C
+	unsigned int m_hOwnerEntity; // 0x180
+	unsigned long long m_hGroundEntity; // 0x184
+	char __buf_0x18C[0x100]; // 0x18C
 	unsigned char m_nModelIndex; // 0x28C
 	char __buf_0x28D[0x1]; // 0x28D
-	int m_nRenderFX; // 0x28E
-	char __buf_0x292[0xA]; // 0x292
-	int m_flSimulationTime; // 0x29C
-	char __buf_0x2A0[0x78]; // 0x2A0
+	unsigned char m_nRenderFX; // 0x28E
+	unsigned char m_nRenderMode; // 0x28F
+	char m_MoveType; // 0x290
+	char m_MoveCollide; // 0x291
+	unsigned char m_nWaterLevel; // 0x292
+	char __buf_0x293[0x85]; // 0x293
 	float m_flUseLookAtAngle; // 0x318
-	char __buf_0x31C[0x24]; // 0x31C
-	int m_iParentAttachment; // 0x340
-	char __buf_0x344[0x4]; // 0x344
-	float m_fadeMinDist; // 0x348
-	float m_fadeMaxDist; // 0x34C
-	float m_flFadeScale; // 0x350
-	char __buf_0x354[0x24]; // 0x354
+	char __buf_0x31C[0x54]; // 0x31C
+	char m_ModelName; // 0x370
+	char __buf_0x371[0x7]; // 0x371
 	unsigned long long m_Collision; // 0x378
-	char __buf_0x380[0xA0]; // 0x380
-	float m_flElasticity; // 0x420
-	float m_flShadowCastDistance; // 0x424
-	char __buf_0x428[0x120]; // 0x428
-	int m_CollisionGroup; // 0x548
-	char __buf_0x54C[0x97E]; // 0x54C
-	unsigned char m_bSimulatedEveryTick; // 0xECA
-	char __buf_0xECB[0x1]; // 0xECB
-	unsigned char m_bAlternateSorting; // 0xECC
-	unsigned char m_bSpotted; // 0xECD
-	DataTable m_bSpottedBy; // 0xECE
-	char __buf_0xED2[0x3E]; // 0xED2
-	DataTable m_bSpottedByMask; // 0xF10
-	char __buf_0xF14[0x4]; // 0xF14
-	unsigned char m_nMinCPULevel; // 0xF18
-	char __buf_0xF19[0x1]; // 0xF19
-	unsigned char m_nMinGPULevel; // 0xF1A
-	char __buf_0xF1B[0x1]; // 0xF1B
-	int m_iTextureFrameIndex; // 0xF1C
-	char __buf_0xF20[0x8]; // 0xF20
-	unsigned long long m_hEffectEntity; // 0xF28
+	char __buf_0x380[0x198]; // 0x380
+	char m_rgflCoordinateFrame; // 0x518
+	char __buf_0x519[0x9AF]; // 0x519
+	unsigned char m_bEverHadPredictionErrorsForThisCommand; // 0xEC8
 };
 
 struct CCSPlayer
@@ -247,7 +235,7 @@ struct CCSPlayer
 	unsigned char m_bDormant; // 0x119
 	char __buf_0x11ssA[0xA]; // 0x11A
 	float m_fEffects; // 0x11C
-	unsigned int m_iTeamNum; // 0x120
+	unsigned int 	; // 0x120
 	unsigned int m_iPendingTeamNum; // 0x124
 	unsigned int m_iHealth; // 0x12C
 	unsigned long m_fFlags; // 0x130
