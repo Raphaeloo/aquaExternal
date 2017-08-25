@@ -43,7 +43,7 @@ string getConfigValue(string property)
 	return NULL;
 }
 
-bool dumpOffsets = 0;
+bool dumpOffsets = 0; // set to 1 if you want to dump offsets
 
 int main() 
 {
@@ -91,9 +91,13 @@ int main()
 	bool rainbowOn = ::atof(getConfigValue("rainbow").c_str());
 	
 	float sensitivity = ::atof(getConfigValue("sensitivity").c_str());
+
+	bool paintBlack = ::atof(getConfigValue("paintBlack").c_str());
 	
 	float m_pitch = ::atof(getConfigValue("m_pitch").c_str());
 	float m_yaw = ::atof(getConfigValue("m_yaw").c_str());
+
+	Vector2D rcsValue = { ::atof(getConfigValue("rcsValueX").c_str()), ::atof(getConfigValue("rcsValueY").c_str()) };
 	
 	bool disablePostProcessing = ::atof(getConfigValue("disablePostProcessing").c_str());
 	
@@ -260,17 +264,17 @@ int main()
 		}
 
 		bool postProcessOrig;
-		csgo.Read((void*) (PostProcessPointer), &postProcessOrig, sizeof(bool));
+		csgo.Read((void*) (PostProcessPointer), &postProcessOrig, sizeof(postProcessOrig));
 	
 		if(postProcessOrig != disablePostProcessing)
 		{
 			if(disablePostProcessing == 0 || disablePostProcessing == 1) // prevent writes under 0 or over 1
-				csgo.Write((void*) (PostProcessPointer), &disablePostProcessing, sizeof(bool));
+				csgo.Write((void*) (PostProcessPointer), &disablePostProcessing, sizeof(disablePostProcessing));
 		}
 
 		try
 		{
-			cheat::GlowAndTrigger(colors, fullBloom, glowStyle, healthBased, rainbowOn, &csgo, &client);
+			cheat::GlowAndTrigger(colors, fullBloom, glowStyle, healthBased, rainbowOn, paintBlack, &csgo, &client);
 		}
 
 		catch (int exception) 
@@ -279,9 +283,9 @@ int main()
 			break;
 		}
 		
-		cheat::RCS(sensitivity, m_yaw, m_pitch, &csgo, &client);
+		cheat::RCS(sensitivity, m_yaw, m_pitch, rcsValue, &csgo, &client);
 
-		cheat::SpoofMusicKit(musicKitID, &csgo, &client); // Only works on local servers because I can't get LocalPlayerIndex without the engine pointer
+		cheat::SpoofMusicKit(musicKitID, &csgo, &client);
 		
 		cheat::FovChanger(iFov, &csgo, &client);
 		

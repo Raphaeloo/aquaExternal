@@ -1,6 +1,3 @@
-#ifndef __CHEAT_H_
-#define __CHEAT_H_
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -102,11 +99,8 @@ namespace cheat
 		unsigned int unk5; // 0028 (054612E8)
 	};
 
-	extern void GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, bool healthBased, bool rainbow, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
-	extern void RCS(float sensitivity, float m_yaw, float m_pitch, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
-	//extern void Trigger(int delayPress_in_ms, int delayRelease_in_ms, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
+	extern void GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, bool healthBased, bool rainbow, bool paintBlack, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
+	extern void RCS(float sensitivity, float m_yaw, float m_pitch, Vector2D rcsValue, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
 	extern void SpoofMusicKit(int MusicID, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
 	extern void FovChanger(int fov, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
 };
-
-#endif

@@ -1,6 +1,3 @@
-#ifndef __COLORS_H_
-#define __COLORS_H_
-
 /*---- Color definitions ----*/
 #define RESET		"\x1B[0m"
 #define RED			"\x1B[31m"
@@ -11,7 +8,6 @@
 #define CYAN		"\x1B[36m"
 #define WHITE		"\x1B[37m"
 
+/*------ Font styles ------*/
 #define BOLD		"\x1B[1m"
 #define UNDERLINE	"\x1B[4m"
-
-#endif

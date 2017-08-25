@@ -26,7 +26,22 @@ void rainbowify(ColorRGBA& color)
 	color.b = cos(rainbowVal - 4.f * pi / 3.f) * .5f + .5f;
 }
 
-void cheat::GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, bool healthBased, bool rainbow, remote::Handle* csgo, remote::MapModuleMemoryRegion* client) 
+void rcsNormalizeAngles(Vector2D& value)
+{
+	if(value.x > 2.f)
+		value.x = 2.f;
+
+	if(value.x < 0.f)
+		value.x = 0.f;
+
+	if(value.x > 2.f)
+		value.x = 2.f;
+
+	if(value.x < 0.f)
+		value.x = 0.f;
+}
+
+void cheat::GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, bool healthBased, bool rainbow, bool paintBlack, remote::Handle* csgo, remote::MapModuleMemoryRegion* client) 
 {
 	if (!csgo || !client)
 		return;
@@ -118,27 +133,20 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, boo
 								}
 							}
 						}
-						
-						unsigned long clrRenderOrig;
-						unsigned long clrRender = 0xff000000; // 0xAARRGGBB
-						csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0xA8), &clrRenderOrig, sizeof(clrRenderOrig));
-						
-						if(clrRender != clrRenderOrig)
-							csgo->Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xA8), &clrRender, sizeof(clrRender));
-						
-						//cout << "clrRenderOrig: " << clrRenderOrig << endl;
+
+						if(paintBlack)
+						{
+							unsigned long clrRenderOrig;
+							unsigned long clrRender = 0xff000000; // 0xAARRGGBB
+
+							csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0xA8), &clrRenderOrig, sizeof(clrRenderOrig));
+							
+							if(clrRender != clrRenderOrig)
+								csgo->Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xA8), &clrRender, sizeof(clrRender));
+						}
 						
 						if(fullBloom == 0 || fullBloom == 1)
-                        {
-                        	/*if(fixBloom < 1000) // needs to be high-ish so it does it for all entities
-                           	{
-                            	g_glow[i].m_bFullBloomRender = 0;
-                            	fixBloom++;
-                            }
-                            else*/
-
-                            g_glow[i].m_bFullBloomRender = fullBloom;
-                        }
+                        	g_glow[i].m_bFullBloomRender = fullBloom;
 						
 						if(glowStyle > 0 && glowStyle < 4)
 							g_glow[i].m_nGlowStyle = glowStyle;
@@ -149,6 +157,7 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, boo
 							g_glow[i].m_flGlowGreen = (2.55 * ent.m_iHealth) / 255.0f;
 							g_glow[i].m_flGlowBlue = 50 / 255;
 						}
+
 						else if(rainbow == 1)
 						{
 							ColorRGBA rainbowClr;
@@ -197,13 +206,15 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, boo
 	process_vm_writev(csgo->GetPid(), g_local, writeCount, g_remote, writeCount, 0);
 }
 
-void cheat::RCS(float sensitivity, float m_yaw, float m_pitch, remote::Handle* csgo, remote::MapModuleMemoryRegion* client)
+void cheat::RCS(float sensitivity, float m_yaw, float m_pitch, Vector2D rcsValue, remote::Handle* csgo, remote::MapModuleMemoryRegion* client)
 {	
 	if(!csgo || !client)
 		return;
 	
 	if(!csgo->RCSEnabled)
 		return;
+
+	rcsNormalizeAngles(rcsValue);
 	
 	unsigned long localPlayer = 0;
 	unsigned int ShotsFired;
@@ -216,7 +227,7 @@ void cheat::RCS(float sensitivity, float m_yaw, float m_pitch, remote::Handle* c
 	{
 		csgo->Read((void*) (localPlayer+0x3764), &vecPunch, sizeof(vecPunch));
 		csgo->Read((void*) (localPlayer+0xAB90), &ShotsFired, sizeof(ShotsFired));
-		//csgo->Read((void*) (localPlayer+0x16C), &oldAngle, sizeof(oldAngle)); // FIXME, need engine pointer to get ViewAngles from engine_client.so
+		//csgo->Read((void*) (localPlayer+0x16C), &oldAngle, sizeof(oldAngle)); // FIXME, need engine pointer to GetViewAngles from engine_client.so
 	}
 	else
 		return;
@@ -225,8 +236,8 @@ void cheat::RCS(float sensitivity, float m_yaw, float m_pitch, remote::Handle* c
 	{
 		QAngle NewPunch = { vecPunch.x - RCSLastPunch.x, vecPunch.y - RCSLastPunch.y, 0 };
 
-		angle.x -= NewPunch.x * 1.688f;
-		angle.y -= NewPunch.y * 1.895f;
+		angle.x -= NewPunch.x * rcsValue.x;
+		angle.y -= NewPunch.y * rcsValue.y;
 		xdo_move_mouse_relative(xdo, (int) -(angle.y / (m_yaw * sensitivity)), (int) (angle.x / (m_pitch * sensitivity)));
 	}
 
@@ -241,24 +252,31 @@ void cheat::SpoofMusicKit(int MusicID, remote::Handle* csgo, remote::MapModuleMe
 	if(!csgo->MusicKitChangerEnabled)
 		return;
 	
-	unsigned int LocalPlayerIndex = 1; // TODO: GetLocalPlayerIndex from engine_client.so
+	unsigned long localPlayer = 0;
+	unsigned int LocalPlayerIndex;
 	unsigned int originalMusicID;
 	unsigned int spoofedMusicID = MusicID;
-	
-	//csgo->Read((void*) localPlayer, &LocalPlayerIndex, sizeof(LocalPlayerIndex)); // TODO: GetLocalPlayerIndex from engine_client.so
+
+	csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long)); // TODO: GetLocalPlayerIndex from engine_client.so
+	csgo->Read((void*) (localPlayer+0x94), &LocalPlayerIndex, sizeof(LocalPlayerIndex));
 	
 	if(!LocalPlayerIndex)
 		return;
 		
 	csgo->Read((void*) (csgo->PlayerResourcesPointer), &csgo->m_addressOfPlayerResource, sizeof(unsigned long));
 		
-	csgo->Read((void*) (csgo->m_addressOfPlayerResource + 0x4FDC + (LocalPlayerIndex * 4)), &originalMusicID, sizeof(spoofedMusicID));
+	csgo->Read((void*) (csgo->m_addressOfPlayerResource + 0x4FDC + (LocalPlayerIndex * 4)), &originalMusicID, sizeof(originalMusicID));
+
+	if(!originalMusicID)
+		return;
+
 	if(csgo->m_addressOfPlayerResource)
 	{
 		if(originalMusicID != spoofedMusicID)
 		{
-			csgo->Write((void*) (csgo->m_addressOfPlayerResource + 0x4FDC + (LocalPlayerIndex * 4)), &spoofedMusicID, sizeof(spoofedMusicID));
-			cout << "Changed music kit ID to " << dec << spoofedMusicID << " on address " << hex << csgo->m_addressOfPlayerResource << endl;
+			//csgo->Write((void*) (csgo->m_addressOfPlayerResource + 0x4FDC + (LocalPlayerIndex * 4)), &spoofedMusicID, sizeof(spoofedMusicID));
+			cout << "Changed music kit ID to " << dec << spoofedMusicID << " on address " << hex << csgo->m_addressOfPlayerResource + 0x4FDC + (LocalPlayerIndex * 4);
+			cout << " on entity index " << dec << LocalPlayerIndex << endl;
 		}
 	}
 }
@@ -278,9 +296,7 @@ void cheat::FovChanger(int fov, remote::Handle* csgo, remote::MapModuleMemoryReg
 	csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long));
 	
 	if(localPlayer != 0)
-	{
 		csgo->Read((void*) (localPlayer+0x4144), &isScoped, sizeof(isScoped));
-	}
 	else
 		return;
 	

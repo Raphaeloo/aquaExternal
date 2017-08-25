@@ -2,9 +2,11 @@
 
 #define FINDPATTERN_CHUNKSIZE 0x1000
 
-namespace remote {
+namespace remote 
+{
 	// Map Module
-	void* MapModuleMemoryRegion::find(Handle handle, const char* data, const char* pattern) {
+	void* MapModuleMemoryRegion::find(Handle handle, const char* data, const char* pattern) 
+	{
 		char buffer[FINDPATTERN_CHUNKSIZE];
 
 		size_t len = strlen(pattern);
@@ -12,33 +14,25 @@ namespace remote {
 		size_t totalsize = this->end - this->start;
 		size_t chunknum = 0;
 
-		while (totalsize) {
+		while (totalsize) 
+		{
 			size_t readsize = (totalsize < chunksize) ? totalsize : chunksize;
 			size_t readaddr = this->start + (chunksize * chunknum);
 
 			bzero(buffer, chunksize);
 
-			if (handle.Read((void*) readaddr, buffer, readsize)) {
-				for (size_t b = 0; b < readsize; b++) {
+			if (handle.Read((void*) readaddr, buffer, readsize)) 
+			{
+				for (size_t b = 0; b < readsize; b++) 
+				{
 					size_t matches = 0;
 
-					while (buffer[b + matches] == data[matches] || pattern[matches] != 'x') {
+					while (buffer[b + matches] == data[matches] || pattern[matches] != 'x') 
+					{
 						matches++;
 
-						if (matches == len) {
-							/*
-							printf("Debug Output:\n");
-							for (int i = 0; i < readsize-b; i++)
-							{
-								if (i != 0 && i % 8 == 0) {
-									printf("\n");
-								}
-								printf("%02x ",(unsigned char)buffer[b+i]);
-							}
-							printf("\n");
-							*/
+						if (matches == len)
 							return (char*) (readaddr + b);
-						}
 					}
 				}
 			}
@@ -51,38 +45,47 @@ namespace remote {
 	}
 
 	// Handle
-	Handle::Handle(pid_t target) {
+	Handle::Handle(pid_t target) 
+	{
 		std::stringstream buffer;
 		buffer << target;
 		pid = target;
 		pidStr = buffer.str();
 	}
 
-	Handle::Handle(std::string target) {
+	Handle::Handle(std::string target) 
+	{
 		// Check to see if the string is numeric (no negatives or dec allowed, which makes this function usable)
-		if (strspn(target.c_str(), "0123456789") != target.size()) {
+		if (strspn(target.c_str(), "0123456789") != target.size()) 
+		{
 			pid = -1;
 			pidStr.clear();
-		} else {
+		} 
+		else 
+		{
 			std::istringstream buffer(target);
 			pidStr = target;
 			buffer >> pid;
 		}
 	}
 
-	std::string Handle::GetPath() {
+	std::string Handle::GetPath() 
+	{
 		return GetSymbolicLinkTarget(("/proc/" + pidStr + "/exe"));
 	}
 
-	std::string Handle::GetWorkingDirectory() {
+	std::string Handle::GetWorkingDirectory() 
+	{
 		return GetSymbolicLinkTarget(("/proc/" + pidStr + "/cwd"));
 	}
 
-	bool Handle::IsValid() {
+	bool Handle::IsValid() 
+	{
 		return (pid != -1);
 	}
 
-	bool Handle::IsRunning() {
+	bool Handle::IsRunning() 
+	{
 		if (!IsValid())
 			return false;
 
@@ -90,7 +93,8 @@ namespace remote {
 		return !(stat(("/proc/" + pidStr).c_str(), &sts) == -1 && errno == ENOENT);
 	}
 
-	bool Handle::Write(void* address, void* buffer, size_t size) {
+	bool Handle::Write(void* address, void* buffer, size_t size) 
+	{
 		struct iovec local[1];
 		struct iovec remote[1];
 
@@ -102,7 +106,8 @@ namespace remote {
 		return (process_vm_writev(pid, local, 1, remote, 1, 0) == size);
 	}
 
-	bool Handle::Read(void* address, void* buffer, size_t size) {
+	bool Handle::Read(void* address, void* buffer, size_t size) 
+	{
 		struct iovec local[1];
 		struct iovec remote[1];
 
@@ -114,69 +119,66 @@ namespace remote {
 		return (process_vm_readv(pid, local, 1, remote, 1, 0) == size);
 	}
 
-	unsigned long Handle::GetCallAddress(void* address) {
+	unsigned long Handle::GetCallAddress(void* address) 
+	{
 		int code = 0;
-		if (Read((char*) address + 1, &code, sizeof(unsigned int))) {
+		if (Read((char*) address + 1, &code, sizeof(unsigned int))) 
 			return (unsigned long)code + (unsigned long) address + 5;
-		}
 
 		return 0;
 	}
-
-	/*unsigned long Handle::GetCallAddress(void* address) {
-		unsigned long code = 0;
-
-		if (Read((char*) address + 1, &code, sizeof(unsigned int))) {
-			return code + (unsigned long) address + 5;
-		}
-
-		return 0;
-	}*/
 	
-	unsigned long Handle::GetAbsoluteAddress(void* address, int offset, int size) {
-        unsigned int code = 0;
+	unsigned long Handle::GetAbsoluteAddress(void* address, int offset, int size) 
+	{
+        int code = 0;
 
-        if(Read((char*) address + offset, &code, sizeof(unsigned int))) {
+        if(Read((char*) address + offset, &code, sizeof(unsigned int))) 
             return (unsigned long) address + code + size;
-        }
 
         return 0;
     }
 
-	MapModuleMemoryRegion* Handle::GetRegionOfAddress(void* address) {
-		for (size_t i = 0; i < regions.size(); i++) {
-			if (regions[i].start > (unsigned long) address && (regions[i].start + regions[i].end) <= (unsigned long) address) {
+	MapModuleMemoryRegion* Handle::GetRegionOfAddress(void* address) 
+	{
+		for (size_t i = 0; i < regions.size(); i++) 
+		{
+			if (regions[i].start > (unsigned long) address && (regions[i].start + regions[i].end) <= (unsigned long) address)
 				return &regions[i];
-			}
 		}
 
 		return NULL;
 	}
 
-	void Handle::ParseMaps() {
+	void Handle::ParseMaps() 
+	{
 		regions.clear();
 
 		std::ifstream maps("/proc/" + pidStr + "/maps");
 
 		std::string line;
-		while (std::getline(maps, line)) {
+		while (std::getline(maps, line)) 
+		{
 			std::istringstream iss(line);
 			std::string memorySpace, permissions, offset, device, inode;
-			if (iss >> memorySpace >> permissions >> offset >> device >> inode) {
+			if (iss >> memorySpace >> permissions >> offset >> device >> inode) 
+			{
 				std::string pathname;
 
-				for (size_t ls = 0, i = 0; i < line.length(); i++) {
-					if (line.substr(i, 1).compare(" ") == 0) {
+				for (size_t ls = 0, i = 0; i < line.length(); i++) 
+				{
+					if (line.substr(i, 1).compare(" ") == 0) 
+					{
 						ls++;
 
-						if (ls == 5) {
+						if (ls == 5) 
+						{
 							size_t begin = line.substr(i, line.size()).find_first_not_of(' ');
 
-							if (begin != -1) {
+							if (begin != -1) 
 								pathname = line.substr(begin + i, line.size());
-							} else {
+
+							else 
 								pathname.clear();
-							}
 						}
 					}
 				}
@@ -188,7 +190,8 @@ namespace remote {
 
 				std::stringstream ss;
 
-				if (memorySplit != -1) {
+				if (memorySplit != -1) 
+				{
 					ss << std::hex << memorySpace.substr(0, memorySplit);
 					ss >> region.start;
 					ss.clear();
@@ -197,7 +200,8 @@ namespace remote {
 					ss.clear();
 				}
 
-				if (deviceSplit != -1) {
+				if (deviceSplit != -1) 
+				{
 					ss << std::hex << device.substr(0, deviceSplit);
 					ss >> region.deviceMajor;
 					ss.clear();
@@ -217,14 +221,14 @@ namespace remote {
 				region.executable = (permissions[2] == 'x');
 				region.shared = (permissions[3] != '-');
 
-				if (!pathname.empty()) {
+				if (!pathname.empty()) 
+				{
 					region.pathname = pathname;
 
 					size_t fileNameSplit = pathname.find_last_of('/');
 
-					if (fileNameSplit != -1) {
+					if (fileNameSplit != -1) 
 						region.filename = pathname.substr(fileNameSplit + 1, pathname.size());
-					}
 				}
 
 				regions.push_back(region);
@@ -232,12 +236,14 @@ namespace remote {
 		}
 	}
 
-	std::string Handle::GetSymbolicLinkTarget(std::string target) {
+	std::string Handle::GetSymbolicLinkTarget(std::string target) 
+	{
 		char buf[PATH_MAX];
 
 		ssize_t len = ::readlink(target.c_str(), buf, sizeof(buf) - 1);
 
-		if (len != -1) {
+		if (len != -1) 
+		{
 			buf[len] = 0;
 
 			return std::string(buf);
@@ -247,7 +253,8 @@ namespace remote {
 	}
 };
 
-unsigned long remote::getModule(const char * moduleName, pid_t pid) {
+unsigned long remote::getModule(const char * moduleName, pid_t pid) 
+{
 	char cmd[256];
 	FILE *maps;
 	unsigned long result = 0;
@@ -256,9 +263,8 @@ unsigned long remote::getModule(const char * moduleName, pid_t pid) {
 	snprintf(cmd, 256, "grep \"%s\" /proc/%i/maps | head -n 1 | cut -d \"-\" -f1", moduleName, pid);
 	maps = popen(cmd, "r");
 
-	if (maps) {
+	if (maps)
 		if (fscanf(maps, "%" SCNx64, &result));
-	}
 
 	pclose(maps);
 
@@ -266,7 +272,8 @@ unsigned long remote::getModule(const char * moduleName, pid_t pid) {
 }
 
 // Functions Exported
-bool remote::FindProcessByName(std::string name, remote::Handle* out) {
+bool remote::FindProcessByName(std::string name, remote::Handle* out) 
+{
     if(out == NULL || name.empty())
         return false;
 
@@ -275,7 +282,8 @@ bool remote::FindProcessByName(std::string name, remote::Handle* out) {
     DIR *dir = opendir("/proc/");
 
     if (dir) {
-        while ((dire = readdir(dir)) != NULL) {
+        while ((dire = readdir(dir)) != NULL) 
+        {
             if (dire->d_type != DT_DIR)
                 continue;
 
@@ -301,7 +309,8 @@ bool remote::FindProcessByName(std::string name, remote::Handle* out) {
 
             std::string exeName = procPath.substr(namePos + 1);
 
-            if(exeName.compare(name) == 0) {
+            if(exeName.compare(name) == 0) 
+            {
                 *out = proc;
 
                 return true;

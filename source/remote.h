@@ -1,6 +1,3 @@
-#ifndef __REMOTE_H_
-#define __REMOTE_H_
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -109,5 +106,3 @@ namespace remote
 	unsigned long getModule(const char * modname, pid_t pid);
 	bool FindProcessByName(std::string name, Handle* out);
 };
-
-#endif

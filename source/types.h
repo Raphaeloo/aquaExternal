@@ -1,6 +1,3 @@
-#ifndef __TYPES_H_
-#define __TYPES_H_
-
 struct Vector 
 {
 	float x;
@@ -246,5 +243,3 @@ struct CCSPlayer
 	QAngle m_angNetworkAngles; // 0x158
 	Vector m_vecNetworkOrigin; // 0x164
 };*/
-
-#endif
