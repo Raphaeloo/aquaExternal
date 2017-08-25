@@ -66,40 +66,25 @@ namespace cheat
 
 		long writeEnd() 
 		{
-			return (long(&(this)->unk2) - long(this));
+			return (long(&(this)->m_nNextFreeSlot) - long(this));
 		}
 		
-		/*void* m_pEntity;   				   //0x0000
+		void* m_pEntity;   				    //0x0000
 		float m_flGlowRed;					//0x0002
 		float m_flGlowGreen;				//0x0003
-		float m_flGlowBlue;              //0x0004
-		float m_flGlowAlpha;             //0x0010
-		uint8_t pad_0014[4];               //0x0014
-		float m_flSomeFloat;             //0x0018
-		uint8_t pad_001C[4];               //0x001C
-		float m_flAnotherFloat;          //0x0020
+		float m_flGlowBlue;              	//0x0004
+		float m_flGlowAlpha;             	//0x0010
+		uint8_t pad_0014[4];                //0x0014
+		float m_flSomeFloat;             	//0x0018
+		uint8_t pad_001C[4];                //0x001C
+		float m_flAnotherFloat;          	//0x0020
 		bool m_bRenderWhenOccluded : 8;     //0x0024
 		bool m_bRenderWhenUnoccluded : 8;   //0x0025
 		bool m_bFullBloomRender : 8;        //0x0026
-		uint8_t pad_0027[5];               //0x0027
-		int m_nGlowStyle;              //0x002C
-		int m_nSplitScreenSlot;        //0x0030
-		int m_nNextFreeSlot;           //0x0034*/
-
-		void* m_pEntity;
-		float m_flGlowRed;
-		float m_flGlowGreen;
-		float m_flGlowBlue;
-		float m_flGlowAlpha;
-		uint8_t unk0[16];
-		bool m_bRenderWhenOccluded : 8;
-		bool m_bRenderWhenUnoccluded : 8;
-		bool m_bFullBloomRender : 8;
-		unsigned char unk1;
-		int m_nFullBloomStencilTestValue;
-		int m_nSplitScreenSlot;
-		int m_nNextFreeSlot;
-		unsigned char unk2[4];
+		uint8_t pad_0027[5];                //0x0027
+		int m_nGlowStyle;              		//0x002C
+		int m_nSplitScreenSlot;        		//0x0030
+		int m_nNextFreeSlot;           		//0x0034
 
 		static const int END_OF_FREE_LIST = -1;
 		static const int ENTRY_IN_USE = -2;
@@ -117,7 +102,7 @@ namespace cheat
 		unsigned int unk5; // 0028 (054612E8)
 	};
 
-	extern void GlowAndTrigger(double colors[12], bool fullBloom, bool healthBased, bool rainbow, bool visCheck, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
+	extern void GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, bool healthBased, bool rainbow, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
 	extern void RCS(float sensitivity, float m_yaw, float m_pitch, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
 	//extern void Trigger(int delayPress_in_ms, int delayRelease_in_ms, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
 	extern void SpoofMusicKit(int MusicID, remote::Handle* csgo, remote::MapModuleMemoryRegion* client);

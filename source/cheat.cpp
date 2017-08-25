@@ -26,7 +26,7 @@ void rainbowify(ColorRGBA& color)
 	color.b = cos(rainbowVal - 4.f * pi / 3.f) * .5f + .5f;
 }
 
-void cheat::GlowAndTrigger(double colors[12], bool fullBloom, bool healthBased, bool rainbow, bool visCheck, remote::Handle* csgo, remote::MapModuleMemoryRegion* client) 
+void cheat::GlowAndTrigger(double colors[12], bool fullBloom, int glowStyle, bool healthBased, bool rainbow, remote::Handle* csgo, remote::MapModuleMemoryRegion* client) 
 {
 	if (!csgo || !client)
 		return;
@@ -77,7 +77,6 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, bool healthBased, 
 		if (g_glow[i].m_pEntity != NULL) 
 		{
 			Entity ent;
-			bool bSpotted;
 
 			if (csgo->Read(g_glow[i].m_pEntity, &ent, sizeof(Entity))) 
 			{
@@ -93,15 +92,6 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, bool healthBased, 
 				
 				if (g_glow[i].m_bRenderWhenOccluded == 1)
 					continue;
-				
-				if(visCheck == 1)
-				{
-					// yes i know. it's a shit way to do a visibility check but we're external and i cant be arsed to do bsp parsing
-					csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0xECD), &bSpotted, sizeof(bSpotted));
-					
-					if(bSpotted == 0)
-						continue;
-				}
 
 				if (ent.m_iTeamNum == 2 || ent.m_iTeamNum == 3) 
 				{
@@ -149,6 +139,9 @@ void cheat::GlowAndTrigger(double colors[12], bool fullBloom, bool healthBased, 
 
                             g_glow[i].m_bFullBloomRender = fullBloom;
                         }
+						
+						if(glowStyle > 0 && glowStyle < 4)
+							g_glow[i].m_nGlowStyle = glowStyle;
 						
 						if(healthBased == 1)
 						{

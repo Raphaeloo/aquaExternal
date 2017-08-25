@@ -84,6 +84,7 @@ int main()
 	double enemyAlpha = ::atof(getConfigValue("glowAlpha").c_str());
 	
 	bool fullBloom = ::atof(getConfigValue("fullBloom").c_str());
+	int glowStyle = ::atof(getConfigValue("glowStyle").c_str());
 	
 	bool healthBased = ::atof(getConfigValue("healthBased").c_str());
 	
@@ -93,8 +94,6 @@ int main()
 	
 	float m_pitch = ::atof(getConfigValue("m_pitch").c_str());
 	float m_yaw = ::atof(getConfigValue("m_yaw").c_str());
-	
-	bool visCheck = ::atof(getConfigValue("visibilityCheck").c_str());
 	
 	bool disablePostProcessing = ::atof(getConfigValue("disablePostProcessing").c_str());
 	
@@ -213,8 +212,8 @@ int main()
 	csgo.FovChangerEnabled = iFovEnabled;
 	csgo.MusicKitChangerEnabled = musicKitEnabled;
 
-	cout << endl;
-	cout << CYAN << " aquaExternal for CS:GO initialized." << endl;
+	cout << CYAN << endl;
+	cout << " aquaExternal for CS:GO initialized." << endl;
 	cout << "  > maintained by: hi im spacebar" << endl;
 	cout << "  > original authors: McSwaggens and s0beit" << endl;
 	cout << RESET << endl;
@@ -271,7 +270,7 @@ int main()
 
 		try
 		{
-			cheat::GlowAndTrigger(colors, fullBloom, healthBased, rainbowOn, visCheck, &csgo, &client);
+			cheat::GlowAndTrigger(colors, fullBloom, glowStyle, healthBased, rainbowOn, &csgo, &client);
 		}
 
 		catch (int exception) 
