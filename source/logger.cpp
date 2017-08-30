@@ -74,4 +74,6 @@ void Logger::error (std::string str)
 }
 
 std::string Logger::Endi (bool endi)
+{
 	return endi ? "Enabled" : "Disabled";
+}

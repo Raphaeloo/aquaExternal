@@ -106,6 +106,8 @@ int main()
 	
 	bool iFovEnabled = ::atof(getConfigValue("fovEnabled").c_str());
 	int iFov = ::atof(getConfigValue("fov").c_str());
+	
+	bool NoFlash = ::atof(getConfigValue("noFlash").c_str());
 
 	double colors[4] = 
 	{
@@ -215,6 +217,7 @@ int main()
 	csgo.TriggerEnabled = false;
 	csgo.FovChangerEnabled = iFovEnabled;
 	csgo.MusicKitChangerEnabled = musicKitEnabled;
+	csgo.NoFlashEnabled = NoFlash;
 
 	cout << CYAN << endl;
 	cout << " aquaExternal for CS:GO initialized." << endl;
@@ -288,6 +291,8 @@ int main()
 		cheat::SpoofMusicKit(musicKitID, &csgo, &client);
 		
 		cheat::FovChanger(iFov, &csgo, &client);
+		
+		cheat::NoFlash(&csgo, &client);
 		
 		std::this_thread::sleep_for(chrono::milliseconds(1)); // optimization
 	}

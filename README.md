@@ -6,9 +6,10 @@ Features:
 * *Glow ESP*
 * *Trigger Bot*
 * *RCS*
+* *No Flash*
 * *Disable Post-Processing*
 * *FOV Changer*
-* *Music Kit Changer (wip)*
+* *Music Kit Changer*
 
 
 ## Toggle Keys (default)
