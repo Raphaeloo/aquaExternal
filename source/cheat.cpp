@@ -258,6 +258,10 @@ void cheat::SpoofMusicKit(int MusicID, remote::Handle* csgo, remote::MapModuleMe
 	unsigned int spoofedMusicID = MusicID;
 
 	csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long)); // TODO: GetLocalPlayerIndex from engine_client.so
+	
+	if(!localPlayer)
+		return;
+	
 	csgo->Read((void*) (localPlayer+0x94), &LocalPlayerIndex, sizeof(LocalPlayerIndex));
 	
 	if(!LocalPlayerIndex)
