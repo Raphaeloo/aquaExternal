@@ -70,6 +70,7 @@ namespace remote
 	bool GlowEnabled;
 	bool RCSEnabled;
 	bool TriggerEnabled;
+	bool NoFlashEnabled;
 	bool MusicKitChangerEnabled;
 	bool FovChangerEnabled;
 
