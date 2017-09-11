@@ -34,10 +34,10 @@ void rcsNormalize(Vector2D& value)
 	if(value.x < 0.f)
 		value.x = 0.f;
 
-	if(value.x > 2.f)
+	if(value.y > 2.f)
 		value.x = 2.f;
 
-	if(value.x < 0.f)
+	if(value.y < 0.f)
 		value.x = 0.f;
 }
 
