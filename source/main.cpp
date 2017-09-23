@@ -20,6 +20,7 @@
 #include "remote.h"
 #include "cheat.h"
 #include "logger.h"
+#include "config.h"
 
 using namespace std;
 using namespace libconfig;
@@ -45,18 +46,10 @@ string getConfigValue(string property)
 
 bool dumpOffsets = 0; // set to 1 if you want to dump offsets
 
-int main() 
+Display* display = XOpenDisplay(0);
+
+void updateConfigValues()
 {
-	Logger::init();
-
-	if (getuid() != 0) 
-	{
-		Logger::error(string("You need to be ") + UNDERLINE + "root");
-		return 0;
-	}
-
-	Display* display = XOpenDisplay(0);
-
 	try 
 	{
 		cfg.readFile("config.cfg");
@@ -73,47 +66,60 @@ int main()
 		ss << "Parsing error at " << pex.getFile() << ":" << pex.getLine() << " - " << pex.getError();
 		Logger::error(ss.str());
 	}
+	
+	keycodeGlow =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("glowKey").c_str()));
+	keycodeRCS =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("rcsKey").c_str()));
+	keycodeTrigger =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("triggerKey").c_str()));
 
-	int keycodeGlow =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("glowKey").c_str()));
-	int keycodeRCS =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("rcsKey").c_str()));
-	int keycodeTrigger =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("triggerKey").c_str()));
+	enemyRed = (::atof(getConfigValue("glowRed").c_str()) / 255);
+	enemyGreen = (::atof(getConfigValue("glowGreen").c_str()) / 255);
+	enemyBlue = (::atof(getConfigValue("glowBlue").c_str()) / 255);
+	enemyAlpha = ::atof(getConfigValue("glowAlpha").c_str());
+	
+	fullBloom = ::atof(getConfigValue("fullBloom").c_str());
+	glowStyle = ::atof(getConfigValue("glowStyle").c_str());
+	
+	healthBased = ::atof(getConfigValue("healthBased").c_str());
+	
+	rainbowOn = ::atof(getConfigValue("rainbow").c_str());
+	
+	sensitivity = ::atof(getConfigValue("sensitivity").c_str());
 
-	double enemyRed = (::atof(getConfigValue("glowRed").c_str()) / 255);
-	double enemyGreen = (::atof(getConfigValue("glowGreen").c_str()) / 255);
-	double enemyBlue = (::atof(getConfigValue("glowBlue").c_str()) / 255);
-	double enemyAlpha = ::atof(getConfigValue("glowAlpha").c_str());
+	paintBlack = ::atof(getConfigValue("paintBlack").c_str());
 	
-	bool fullBloom = ::atof(getConfigValue("fullBloom").c_str());
-	int glowStyle = ::atof(getConfigValue("glowStyle").c_str());
-	
-	bool healthBased = ::atof(getConfigValue("healthBased").c_str());
-	
-	bool rainbowOn = ::atof(getConfigValue("rainbow").c_str());
-	
-	float sensitivity = ::atof(getConfigValue("sensitivity").c_str());
+	m_pitch = ::atof(getConfigValue("m_pitch").c_str());
+	m_yaw = ::atof(getConfigValue("m_yaw").c_str());
 
-	bool paintBlack = ::atof(getConfigValue("paintBlack").c_str());
+	rcsValue = { ::atof(getConfigValue("rcsValueX").c_str()), ::atof(getConfigValue("rcsValueY").c_str()) };
 	
-	float m_pitch = ::atof(getConfigValue("m_pitch").c_str());
-	float m_yaw = ::atof(getConfigValue("m_yaw").c_str());
+	disablePostProcessing = ::atof(getConfigValue("disablePostProcessing").c_str());
+	
+	musicKitEnabled = ::atof(getConfigValue("musicKitChangerEnabled").c_str());
+	musicKitID = ::atof(getConfigValue("musicKitID").c_str());
+	
+	iFovEnabled = ::atof(getConfigValue("fovEnabled").c_str());
+	iFov = ::atof(getConfigValue("fov").c_str());
+	
+	NoFlash = ::atof(getConfigValue("noFlash").c_str());
 
-	Vector2D rcsValue = { ::atof(getConfigValue("rcsValueX").c_str()), ::atof(getConfigValue("rcsValueY").c_str()) };
-	
-	bool disablePostProcessing = ::atof(getConfigValue("disablePostProcessing").c_str());
-	
-	bool musicKitEnabled = ::atof(getConfigValue("musicKitChangerEnabled").c_str());
-	int musicKitID = ::atof(getConfigValue("musicKitID").c_str());
-	
-	bool iFovEnabled = ::atof(getConfigValue("fovEnabled").c_str());
-	int iFov = ::atof(getConfigValue("fov").c_str());
-	
-	bool NoFlash = ::atof(getConfigValue("noFlash").c_str());
-
-	double colors[4] = 
+	colors = 
 	{
 		enemyRed, enemyGreen, enemyBlue, enemyAlpha,
 	};
+}
 
+int main() 
+{
+	Logger::init();
+
+	if (getuid() != 0) 
+	{
+		Logger::error(string("You need to be ") + UNDERLINE + "root");
+		return 0;
+	}
+	
+	updateConfigValues();
+	
 	remote::Handle csgo;
 
 	while (true) 
@@ -293,6 +299,8 @@ int main()
 		cheat::FovChanger(iFov, &csgo, &client);
 		
 		cheat::NoFlash(&csgo, &client);
+		
+		updateConfigValues();
 		
 		std::this_thread::sleep_for(chrono::milliseconds(1)); // optimization
 	}
