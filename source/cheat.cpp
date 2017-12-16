@@ -121,15 +121,26 @@ void cheat::GlowAndTrigger(ColorRGBA colors, bool fullBloom, int glowStyle, bool
 							unsigned int entityId = 0;
 							bool isImmune;
 							csgo->Read((void*) (localPlayer+0xBBB8), &inCrossID, sizeof(inCrossID));
-							csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0x4158), &isImmune, sizeof(isImmune));
+							csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0x415C), &isImmune, sizeof(isImmune));
 							if(inCrossID > 0 && !isImmune) // no unnecessary reads
 							{
 								csgo->Read((void*) ((unsigned long) g_glow[i].m_pEntity + 0x94), &entityId, sizeof(entityId));
 
 								if(inCrossID == entityId)
 								{
-									xdo_mouse_down(xdo, CURRENTWINDOW, 1);
-									xdo_mouse_up(xdo, CURRENTWINDOW, 1);
+									if(csgo->triggerKeyEnabled)
+									{
+										if(GetKeyCodeState(csgo->keycodeTriggerKey))
+										{
+											xdo_mouse_down(xdo, CURRENTWINDOW, 1);
+											xdo_mouse_up(xdo, CURRENTWINDOW, 1);
+										}
+									}
+									else
+									{
+										xdo_mouse_down(xdo, CURRENTWINDOW, 1);
+										xdo_mouse_up(xdo, CURRENTWINDOW, 1);
+									}
 								}
 							}
 						}
@@ -268,7 +279,7 @@ void cheat::SpoofMusicKit(int MusicID, remote::Handle* csgo, remote::MapModuleMe
 		
 	csgo->Read((void*) (csgo->PlayerResourcesPointer), &csgo->m_addressOfPlayerResource, sizeof(unsigned long));
 		
-	csgo->Read((void*) (csgo->m_addressOfPlayerResource + 0x4FDC + (LocalPlayerIndex * 4)), &originalMusicID, sizeof(originalMusicID));
+	csgo->Read((void*) (csgo->m_addressOfPlayerResource + 0x5020 + (LocalPlayerIndex * 4)), &originalMusicID, sizeof(originalMusicID));
 
 	if(!originalMusicID)
 		return;
@@ -277,7 +288,7 @@ void cheat::SpoofMusicKit(int MusicID, remote::Handle* csgo, remote::MapModuleMe
 	{
 		if(originalMusicID != spoofedMusicID)
 		{
-			csgo->Write((void*) (csgo->m_addressOfPlayerResource + 0x4FDC + (LocalPlayerIndex * 4)), &spoofedMusicID, sizeof(spoofedMusicID));
+			csgo->Write((void*) (csgo->m_addressOfPlayerResource + 0x5020 + (LocalPlayerIndex * 4)), &spoofedMusicID, sizeof(spoofedMusicID));
 			cout << "Changed music kit ID to " << dec << spoofedMusicID << " on address " << hex << csgo->m_addressOfPlayerResource + 0x4FDC + (LocalPlayerIndex * 4);
 			cout << " on entity index " << dec << LocalPlayerIndex << endl;
 		}
@@ -294,18 +305,18 @@ void cheat::FovChanger(int fov, remote::Handle* csgo, remote::MapModuleMemoryReg
 	
 	unsigned long localPlayer = 0;
 	bool isScoped;
-	float fovRate = 0.000005f;
+	//float fovRate = 0.000005f;
 	
 	csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long));
 	
 	if(localPlayer != 0)
-		csgo->Read((void*) (localPlayer+0x4144), &isScoped, sizeof(isScoped));
+		csgo->Read((void*) (localPlayer+0x4146), &isScoped, sizeof(isScoped));
 	else
 		return;
 	
 	if(!isScoped)
 	{
-		csgo->Write((void*) (localPlayer + 0x3738), &fovRate, sizeof(float));
+		//csgo->Write((void*) (localPlayer + 0x3738), &fovRate, sizeof(float));
 		csgo->Write((void*) (localPlayer + 0x3998), &fov, sizeof(int)); // m_iFOV
 		csgo->Write((void*) (localPlayer + 0x399C), &fov, sizeof(int)); // m_iFOVStart
 		csgo->Write((void*) (localPlayer + 0x3AF4), &fov, sizeof(int)); // m_iDefaultFOV

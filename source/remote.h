@@ -73,6 +73,8 @@ namespace remote
 	bool NoFlashEnabled;
 	bool MusicKitChangerEnabled;
 	bool FovChangerEnabled;
+	bool triggerKeyEnabled;
+	int keycodeTriggerKey;
 
 		Handle() : pid(-1) {}
 		Handle(pid_t target);

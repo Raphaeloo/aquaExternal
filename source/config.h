@@ -1,6 +1,7 @@
 int keycodeGlow;
 int keycodeRCS;
-int keycodeTrigger;
+int keycodeTriggerToggle;
+int keycodeTriggerKey;
 
 double enemyRed;
 double enemyGreen;
@@ -34,3 +35,5 @@ int iFov;
 bool NoFlash;
 
 ColorRGBA colors;
+
+bool triggerKeyEnabled;

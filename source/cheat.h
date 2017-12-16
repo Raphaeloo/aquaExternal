@@ -32,6 +32,8 @@ using namespace std;
 #define MAX_TRAIL_LENGTH		30
 #define MAX_PLAYER_NAME_LENGTH		128
 
+bool GetKeyCodeState(KeyCode keyCode);
+
 namespace cheat 
 {
 	template<class T> class CUtlVector 

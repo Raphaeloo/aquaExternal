@@ -69,7 +69,8 @@ void updateConfigValues()
 	
 	keycodeGlow =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("glowKey").c_str()));
 	keycodeRCS =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("rcsKey").c_str()));
-	keycodeTrigger =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("triggerKey").c_str()));
+	keycodeTriggerToggle =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("triggerToggleKey").c_str()));
+	keycodeTriggerKey =  XKeysymToKeycode(display, XStringToKeysym(getConfigValue("triggerKey").c_str()));
 
 	enemyRed = (::atof(getConfigValue("glowRed").c_str()) / 255);
 	enemyGreen = (::atof(getConfigValue("glowGreen").c_str()) / 255);
@@ -102,10 +103,26 @@ void updateConfigValues()
 	
 	NoFlash = ::atof(getConfigValue("noFlash").c_str());
 
+	triggerKeyEnabled = ::atof(getConfigValue("triggerKeyEnabled").c_str());
+
 	colors = 
 	{
 		enemyRed, enemyGreen, enemyBlue, enemyAlpha,
 	};
+}
+
+bool GetKeyCodeState(KeyCode keyCode)
+{
+    if(!display)
+    {
+        return false;
+    }
+ 
+    char szKey[32];
+ 
+    XQueryKeymap(display, szKey);
+ 
+    return szKey[keyCode / 8] & (1 << (keyCode % 8));
 }
 
 int main() 
@@ -224,7 +241,9 @@ int main()
 	csgo.FovChangerEnabled = iFovEnabled;
 	csgo.MusicKitChangerEnabled = musicKitEnabled;
 	csgo.NoFlashEnabled = NoFlash;
-
+	csgo.triggerKeyEnabled = triggerKeyEnabled;
+	csgo.keycodeTriggerKey = keycodeTriggerKey;
+	
 	cout << CYAN << endl;
 	cout << " aquaExternal for CS:GO initialized." << endl;
 	cout << "  > maintained by: hi im spacebar" << endl;
@@ -260,7 +279,7 @@ int main()
 							Logger::toggle("RCS\t\t", csgo.RCSEnabled);
 						}
 						
-						if (code == keycodeTrigger) 
+						if (code == keycodeTriggerToggle) 
 						{
 							csgo.TriggerEnabled = !csgo.TriggerEnabled;
 							Logger::toggle("Trigger\t\t", csgo.TriggerEnabled);
